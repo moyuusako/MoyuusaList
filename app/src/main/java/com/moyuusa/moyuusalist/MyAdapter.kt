@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 
-class MyAdapter(private val myDataset:List<RowData>):
+class MyAdapter(private val myDataset:List<RowData>, private val listener: OrgClickListener):
     RecyclerView.Adapter<MyAdapter.ViewHolder>(){
 
     // https://developer.android.com/guide/topics/ui/layout/recyclerview
@@ -43,8 +43,16 @@ class MyAdapter(private val myDataset:List<RowData>):
         //holder.view. = myDataset[position]
         iconImageView.setImageResource(myDataset[position].iconID)
         conTextView.text = myDataset[position].title
+        holder.view.setOnClickListener{
+            listener.onClick(it, position)
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = myDataset.size
+
+    // 何番目が押されたか返す
+    interface OrgClickListener {
+        fun onClick(view: View, id: Int)
+    }
 }

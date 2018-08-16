@@ -1,12 +1,17 @@
 package com.moyuusa.moyuusalist
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.Toast
 
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -22,7 +27,38 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         viewManager = LinearLayoutManager(this)
-        viewAdapter = MyAdapter(initListData())
+        viewAdapter = MyAdapter(initListData(), object :MyAdapter.OrgClickListener{
+            override fun onClick(view: View, id: Int) {
+
+                //test
+                var toastMsg : Int
+                when(id){
+                    DataValues.ID_HOMEPAGE -> {
+                        // open url
+                        val uri : Uri = Uri.parse(DataValues.URL_MOYUUSITE)
+                        val intent = Intent(Intent.ACTION_VIEW, uri)
+                        startActivity(intent)
+                        toastMsg = DataValues.CON_TEXT_LIST[DataValues.ID_HOMEPAGE]
+                    }
+                    DataValues.ID_BEHANCE -> {
+                        toastMsg = DataValues.CON_TEXT_LIST[DataValues.ID_BEHANCE]
+                    }
+                    DataValues.ID_PROFILE ->{
+                        toastMsg = DataValues.CON_TEXT_LIST[DataValues.ID_PROFILE]
+                    }
+                    DataValues.ID_INSTA -> {
+                        val uri : Uri = Uri.parse(DataValues.URL_INSTA)
+                        val intent = Intent(Intent.ACTION_VIEW, uri)
+                        startActivity(intent)
+                        toastMsg = DataValues.CON_TEXT_LIST[DataValues.ID_INSTA]
+                    }
+                    else ->{
+                        toastMsg = R.string.app_name
+                    }
+                }
+                Toast.makeText(this@MainActivity, toastMsg, Toast.LENGTH_SHORT).show()
+            }
+        })
 
         recyclerView = findViewById<RecyclerView>(R.id.view_recylclerlist).apply {
             // use this setting to improve performance if you know that changes
@@ -35,33 +71,21 @@ class MainActivity : AppCompatActivity() {
             // specify an viewAdapter (see also next example)
             adapter = viewAdapter
 
-            fab.setOnClickListener { view ->
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show()
-            }
+
         }
     }
 
     private fun initListData():List<RowData>{
         val list = mutableListOf<RowData>()
-        // TODO: write in method or change to simple code
-        RowData().also {
-            it.iconID = R.mipmap.icon1
-            it.title = getString(R.string.homepage)
-            // 単にaddすれば後ろに増えていく
-            list.add(it)
+        // TODO: nullcheck, culc length
+        for (i in 0..3){
+            RowData().also {
+                it.iconID = DataValues.CON_ICON_LIST[i]
+                it.title = getString(DataValues.CON_TEXT_LIST[i])
+                // 単にaddすれば後ろに増えていく
+                list.add(it)
+            }
         }
-        RowData().also {
-            it.iconID = R.mipmap.icon1
-            it.title = getString(R.string.behance)
-            list.add(it)
-        }
-        RowData().also {
-            it.iconID = R.mipmap.icon1
-            it.title = getString(R.string.profile_usa)
-            list.add(it)
-        }
-
         return list
     }
 
