@@ -1,2 +1,3 @@
 # MoyuusaList
-Android application
+Android application  
+for practice
